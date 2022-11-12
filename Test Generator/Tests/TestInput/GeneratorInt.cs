@@ -1,6 +1,6 @@
 ﻿namespace Faker.Generators
 {
-	internal class GeneratorInt : IValueGenerator
+	public class GeneratorInt : IValueGenerator
 	{
 		private const int _minInt = 1;
 	    public Type GeneratedType {get; } = typeof(int);

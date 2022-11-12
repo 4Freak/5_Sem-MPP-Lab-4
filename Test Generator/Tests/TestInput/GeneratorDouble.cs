@@ -1,6 +1,6 @@
 ﻿namespace Faker.Generators
 {
-	internal class GeneratorDouble : IValueGenerator
+	public class GeneratorDouble : IValueGenerator
 	{
 		public Type GeneratedType {get; } = typeof(double);
 

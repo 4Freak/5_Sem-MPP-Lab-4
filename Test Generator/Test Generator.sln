@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataFlow", "Test Generator\DataFlow.csproj", "{FAAC91DC-A96D-4B34-9E82-D551E536D97A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dataflow", "Dataflow\Dataflow.csproj", "{FAAC91DC-A96D-4B34-9E82-D551E536D97A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{E178DE69-964C-4711-9693-8AFB756A9A9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{E178DE69-964C-4711-9693-8AFB756A9A9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGeneratorLib", "TestGenerator\TestGeneratorLib.csproj", "{3810504F-0F1F-4A02-A70E-C4675392C4D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E178DE69-964C-4711-9693-8AFB756A9A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E178DE69-964C-4711-9693-8AFB756A9A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E178DE69-964C-4711-9693-8AFB756A9A9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3810504F-0F1F-4A02-A70E-C4675392C4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3810504F-0F1F-4A02-A70E-C4675392C4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3810504F-0F1F-4A02-A70E-C4675392C4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3810504F-0F1F-4A02-A70E-C4675392C4D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

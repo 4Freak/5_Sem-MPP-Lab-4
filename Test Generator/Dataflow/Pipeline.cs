@@ -1,15 +1,18 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using TestGeneratorLib;
 
 namespace Test_Generator
 {
 	public class Pipeline
 	{
 		private readonly PipelineConfiguration _pipelineConfiguration;
+		private readonly TestGenerator _testGenerator;
 
 		public Pipeline(PipelineConfiguration pipelineConfiguration)
 		{
 			_pipelineConfiguration = pipelineConfiguration;
+			_testGenerator = new TestGenerator();
 		}
 
 		public async Task PerformProcessing(IEnumerable<string> filePaths, string resultDirecoty)
@@ -61,8 +64,8 @@ namespace Test_Generator
 
 		private string ProcessFileContent(string content)
 		{
-			string result = content;
-			return result;
+			var testContent = _testGenerator.Generate(content);
+			return testContent.Content;
 		}
 
 		private async Task WriteFile (FileContent fileContent, string resultDirectory)

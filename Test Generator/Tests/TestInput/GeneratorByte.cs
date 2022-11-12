@@ -1,6 +1,6 @@
 ﻿namespace Faker.Generators
 {
-	internal class GeneratorByte : IValueGenerator
+	public class GeneratorByte : IValueGenerator
 	{
 	    
 		private const int _minByte = 1;

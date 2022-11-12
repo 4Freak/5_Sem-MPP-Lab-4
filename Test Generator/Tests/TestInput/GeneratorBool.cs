@@ -13,5 +13,10 @@
 		{
 			return type == GeneratedType;
 		}
+
+		public bool CanGenerate(string type)
+		{
+			return false;
+		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace Faker.Generators
 {
-	internal class GeneratorChar : IValueGenerator
+	public class GeneratorChar : IValueGenerator
 	{
 		private const int _minChar = 1;
 		private const int _maxChar = 26;

@@ -2,7 +2,7 @@
 
 namespace Faker.Generators
 {
-	internal class GeneratorString : IValueGenerator
+	public class GeneratorString : IValueGenerator
 	{
 		private const int _minLen = 1;
 		private const int _maxLen = 20;
