@@ -1,4 +1,4 @@
-﻿namespace Test_Generator
+﻿namespace Dataflow
 {
 	public class EntryPoint
 	{
@@ -34,7 +34,7 @@
 			_idResultDirectory = args.Length - 4;
 			_idMaxWritingTask = args.Length - 3;
 			_idMaxProcessingTask = args.Length - 2;
-			_idMaxReadingTask+= args.Length-1;
+			_idMaxReadingTask = args.Length - 1;
 
 			for (int i = 0; i < _idResultDirectory+1; i++)
 			{

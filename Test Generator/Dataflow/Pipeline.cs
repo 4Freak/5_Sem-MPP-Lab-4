@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
 using TestGeneratorLib;
 
-namespace Test_Generator
+namespace Dataflow
 {
 	public class Pipeline
 	{

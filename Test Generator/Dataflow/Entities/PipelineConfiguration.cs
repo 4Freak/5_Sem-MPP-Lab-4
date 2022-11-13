@@ -1,4 +1,4 @@
-﻿namespace Test_Generator
+﻿namespace Dataflow
 {
 	public class PipelineConfiguration
 	{
