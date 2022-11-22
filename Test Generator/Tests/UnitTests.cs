@@ -8,33 +8,26 @@ namespace Tests
 {
 	public class Tests
 	{
-		[SetUp]
-		public void Setup ()
-		{
-		}
+		private int _idEndFilePaths;
+		private int _idResultDirectory;
+		private int _idMaxWritingTask;
+		private int _idMaxProcessingTask;
+		private int _idMaxReadingTask;
 
-		[Test]
-		public async Task Test1 ()
+		private string[] args;
+
+		private int _classesCount = 4;
+
+		[SetUp]
+		public async Task Setup ()
 		{
-			int _idEndFilePaths;
-			int _idResultDirectory;
-			int _idMaxWritingTask;
-			int _idMaxProcessingTask;
-			int _idMaxReadingTask;
 			
-			var args = new string[] {
-				"../../../../Tests/TestInput/FileSeeker.cs",
-				"../../../../Tests/TestInput/GeneratorBool.cs",
-				"../../../../Tests/TestInput/GeneratorByte.cs",
-				"../../../../Tests/TestInput/GeneratorChar.cs",
-				"../../../../Tests/TestInput/GeneratorDouble.cs",
-				"../../../../Tests/TestInput/GeneratorFloat.cs",
-				"../../../../Tests/TestInput/GeneratorInt.cs",
-				"../../../../Tests/TestInput/GeneratorList.cs",
-				"../../../../Tests/TestInput/GeneratorLong.cs",
-				"../../../../Tests/TestInput/GeneratorObject.cs",
-				"../../../../Tests/TestInput/GeneratorShort.cs",
-				"../../../../Tests/TestInput/GeneratorString.cs",
+			args = new string[] {
+				"../../../../Tests/TestInput/FileSeeker.cs",			// Does not exist
+				"../../../../Tests/TestInput/ManyClasses.cs",			// Many classes inside
+				"../../../../Tests/TestInput/ManyNamespaces.cs",		// Many namespaces inside
+				"../../../../Tests/TestInput/NoMethods.cs",				// No methods inside
+				"../../../../Tests/TestInput/FileScopedNamespace.cs",   // FileScoped namespace inside
 				"../../../../Tests/TestOutput",
 				"4",
 				"4",
@@ -63,14 +56,38 @@ namespace Tests
 			}
 
 			await pipeline.PerformProcessing(filePaths, args[_idResultDirectory]);
+		}
 
+		[Test]
+		public void TestFileCount ()
+		{
 			var dirInfo = new DirectoryInfo(args[_idResultDirectory]);
 			var filesConut = dirInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Length;
 			
-			Assert.That(filesConut, Is.EqualTo(_idEndFilePaths+1));
+			Assert.That(filesConut, Is.EqualTo(_classesCount));
+		}
 
+		[Test]
+		public void TestEmptyFiles()
+		{
+			var dirInfo = new DirectoryInfo(args[_idResultDirectory]);
+			var files = dirInfo.GetFiles();
+			foreach (var file in files)
+			{
+				if (file.Name == "FileSeeker.cs" ||
+					file.Name == "NoMethods.cs")
+				{
+					Assert.Fail();
+				}
+			}
+			Assert.Pass();
+		}
+
+		[Test]
+		public void TestFileContent()
+		{
 			string sourceStr;
-			using (var sr = new StreamReader("../../../../Tests/TestOutput/GeneratorBool.cs"))
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyClasses_GeneratorBool.cs"))
 			{
 				sourceStr = sr.ReadToEnd();
 			}
@@ -91,9 +108,16 @@ namespace Tests
 				Assert.That(classes.Count, Is.EqualTo(1));
 				Assert.That(classes[0].Identifier.Text, Is.EqualTo("GeneratorBool_Test"));
 				Assert.That(methods.Length, Is.EqualTo(3));
+				
 				Assert.That(methods[0].Identifier.Text, Is.EqualTo("CanGenerate_Test"));
-				Assert.That(methods[1].Identifier.Text, Is.EqualTo("CanGenerate1_Test"));
+				Assert.That(methods[1].Identifier.Text, Is.EqualTo("CanGenerate_1_Test"));
 				Assert.That(methods[2].Identifier.Text, Is.EqualTo("Generate_Test"));
+			
+				// Check for no parameters
+				foreach (var method in methods)
+				{
+					Assert.That(method.ParameterList.Parameters.Count, Is.EqualTo(0));
+				} 
 			});
 		}
 	}

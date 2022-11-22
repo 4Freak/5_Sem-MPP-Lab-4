@@ -1,0 +1,3 @@
+﻿namespace Faker.Generators
+{
+}

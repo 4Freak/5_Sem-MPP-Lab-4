@@ -9,12 +9,30 @@ namespace TestGeneratorLib
 {
 	public class TestGenerator
 	{
-		public TestContent Generate(string sourceStr)
+		public List<TestContent> Generate(string sourceStr)
 		{
+			var result = new List<TestContent>();
+
 			var tree = CSharpSyntaxTree.ParseText(sourceStr);
+			if (tree == null)
+			{
+				return result;
+			}
 			var root = tree.GetCompilationUnitRoot();
 
 			var sourceNamespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
+			var sourceFileScopedNamespaces = root.DescendantNodes().OfType<FileScopedNamespaceDeclarationSyntax>();
+			bool isHasFilescopedNamespace = false;
+			FileScopedNamespaceDeclarationSyntax sourceFileScopedNamespace = null;
+			foreach(var sfsn in sourceFileScopedNamespaces)
+			{
+				if (sfsn != null)
+				{
+					sourceFileScopedNamespace = FileScopedNamespaceDeclaration(QualifiedName((sfsn).Name, IdentifierName("Tests")));
+					isHasFilescopedNamespace = true;
+				}
+			}
+
 			var sourceUsings = root.DescendantNodes().OfType<UsingDirectiveSyntax>();
 			var resultUsings = new SyntaxList<UsingDirectiveSyntax>(sourceUsings)
 				.AddRange(sourceNamespaces.Select(GetUsingsFromNamespaces))
@@ -27,32 +45,80 @@ namespace TestGeneratorLib
 			var resultClasses = root.DescendantNodes().OfType<ClassDeclarationSyntax>()
 				.Where (resultClass => resultClass.Modifiers.Any(SyntaxKind.PublicKeyword)).ToList();
 
-			var resultMembers = resultClasses.Select(AssembleNamespaces).ToArray();
+			foreach (var resultClass in resultClasses)
+			{
+				var resultMembers = AssembleNamespaces(resultClass, isHasFilescopedNamespace);
 
-			var resultUnit = CompilationUnit()
-				.WithUsings(resultUsings)
-				.AddMembers(resultMembers);
+				string namespaceName;
+				CompilationUnitSyntax resultUnit = null;
+				if (isHasFilescopedNamespace)
+				{
+					resultUnit = CompilationUnit()
+						.WithMembers(SingletonList<MemberDeclarationSyntax>(sourceFileScopedNamespace
+						.WithUsings(resultUsings)
+						.AddMembers(resultMembers)));
+						
+					namespaceName = sourceFileScopedNamespace.Name.ToString();
+				}
+				else
+				{
+					resultUnit = CompilationUnit()
+						.WithUsings(resultUsings)
+						.AddMembers(resultMembers);
+					namespaceName = (resultMembers as NamespaceDeclarationSyntax).Name.ToString();
+				}
 
-			return new TestContent(resultUnit.NormalizeWhitespace().ToFullString());
+				result.Add(new TestContent(namespaceName,
+											resultClass.Identifier.Text, 
+											resultUnit.NormalizeWhitespace().ToFullString()));;			
+			}
+			return result;
 		}
 		private UsingDirectiveSyntax GetUsingsFromNamespaces (NamespaceDeclarationSyntax namespaceDeclaration)
 		{
 			return UsingDirective(namespaceDeclaration.Name);
 		}
 
-		private MemberDeclarationSyntax AssembleNamespaces (ClassDeclarationSyntax classDeclaration)
+		private MemberDeclarationSyntax AssembleNamespaces (ClassDeclarationSyntax classDeclaration, bool isHasFileScopedNamespace)
 		{
-			var resultNamespace = NamespaceDeclaration(IdentifierName("Tests"));
-			if (classDeclaration.Parent != null)
+			var resultClass = AssembleClass(classDeclaration);
+			if (isHasFileScopedNamespace)
 			{
-				resultNamespace = NamespaceDeclaration(QualifiedName((classDeclaration.Parent as NamespaceDeclarationSyntax).Name, IdentifierName("Tests")));
+				return resultClass;
 			}
 
-			var resultClass = AssembleClass(classDeclaration);
+			NamespaceDeclarationSyntax currNamespace = classDeclaration.Parent as NamespaceDeclarationSyntax;
+			NamespaceDeclarationSyntax resultNamespaces;
+			var classNamespaces = new List<NamespaceDeclarationSyntax>();	
 
-			resultNamespace = resultNamespace.AddMembers(resultClass);
+			while (currNamespace != null)
+			{
+				classNamespaces.Add(NamespaceDeclaration(QualifiedName((currNamespace).Name, IdentifierName("Tests"))));
+				currNamespace = currNamespace.Parent as NamespaceDeclarationSyntax;
+			}
 
-			return resultNamespace;
+			if (classNamespaces.Count == 0)
+			{
+				resultNamespaces = NamespaceDeclaration(IdentifierName("Tests"));	
+			}
+			else
+			{
+				resultNamespaces = classNamespaces[0];
+			}
+			
+			resultNamespaces = resultNamespaces.AddMembers(resultClass);
+
+			if (classNamespaces.Count > 1)
+			{
+				classNamespaces[0] = resultNamespaces;
+				for (int i = 1; i < classNamespaces.Count; i++)
+				{
+					classNamespaces[i] = classNamespaces[i].AddMembers(classNamespaces[i-1]);
+				}
+				resultNamespaces = classNamespaces[classNamespaces.Count-1];
+			}
+
+			return resultNamespaces;
 		}
 
 		private MemberDeclarationSyntax AssembleClass(ClassDeclarationSyntax classDeclaration)
@@ -97,12 +163,11 @@ namespace TestGeneratorLib
 				while (	(i < sourceMethods.Count) &&
 						((overloadCount == 0) || (sourceMethods[i].Identifier.Text == prevId)))
 				{
-					string overloadID = sourceMethods[i].Identifier.Text + (overloadCount == 0 ? "" : overloadCount.ToString()) + "_Test";
+					string overloadID = sourceMethods[i].Identifier.Text + (overloadCount == 0 ? "" :"_" + overloadCount.ToString()) + "_Test";
 					
 					resultMembers.Add(MethodDeclaration(resultReturnedType, overloadID)
 						.WithAttributeLists(resultAttribute)
 						.WithModifiers(resultModifiers)
-						.WithParameterList(sourceMethods[i].ParameterList)
 						.WithBody(resultBody));
 
 					overloadCount++;

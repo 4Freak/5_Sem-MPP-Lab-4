@@ -12,18 +12,8 @@
 			if (args.Length == 0) 
 			{
 				args = new string[] {
-					"../../../../Tests/TestInput/FileSeeker.cs",
 					"../../../../Tests/TestInput/GeneratorBool.cs",
 					"../../../../Tests/TestInput/GeneratorByte.cs",
-					"../../../../Tests/TestInput/GeneratorChar.cs",
-					"../../../../Tests/TestInput/GeneratorDouble.cs",
-					"../../../../Tests/TestInput/GeneratorFloat.cs",
-					"../../../../Tests/TestInput/GeneratorInt.cs",
-					"../../../../Tests/TestInput/GeneratorList.cs",
-					"../../../../Tests/TestInput/GeneratorLong.cs",
-					"../../../../Tests/TestInput/GeneratorObject.cs",
-					"../../../../Tests/TestInput/GeneratorShort.cs",
-					"../../../../Tests/TestInput/GeneratorString.cs",
 					"../../../../Tests/TestOutput",
 					"4",
 					"4",

@@ -1,5 +1,5 @@
-﻿namespace Faker.Generators
-{
+﻿namespace FileScopedFaker;
+
 	public class GeneratorByte : IValueGenerator
 	{
 	    
@@ -18,4 +18,4 @@
 			return type == GeneratedType;
 		}
 	}
-}
+
