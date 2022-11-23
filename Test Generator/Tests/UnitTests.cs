@@ -16,7 +16,7 @@ namespace Tests
 
 		private string[] args;
 
-		private int _classesCount = 4;
+		private int _classesCount = 5;
 
 		[SetUp]
 		public async Task Setup ()
@@ -84,10 +84,113 @@ namespace Tests
 		}
 
 		[Test]
+		public void TestManyClasses()
+		{
+			string sourceStr;
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyClasses_Faker.Generators.Tests_GeneratorBool1.cs"))
+			{
+				sourceStr = sr.ReadToEnd();
+			}
+
+			Assert.IsNotNull(sourceStr);
+			Assert.IsNotEmpty(sourceStr);
+		}
+
+		[Test]
+		public void TestManyNamspaces()
+		{
+			string sourceStr;
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyNamespaces_Faker.Generators.Tests_GeneratorByte.cs"))
+			{
+				sourceStr = sr.ReadToEnd();
+			}	
+
+			Assert.IsNotNull(sourceStr);
+			Assert.IsNotEmpty(sourceStr);
+
+			var tree = CSharpSyntaxTree.ParseText(sourceStr);
+			var root = tree.GetCompilationUnitRoot();
+			
+			var sourceNamespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
+			if (sourceNamespaces.Count() == 0)
+			{
+				Assert.Fail();
+			}
+
+			foreach (var sourceNamespace in sourceNamespaces)
+			{
+				var namespaceName = sourceNamespace.Name.ToString();
+				if (!(namespaceName == "Faker.Generators.Tests" ||
+					namespaceName == "AnothorOne.Tests"))
+				{
+					Assert.Fail();
+				}
+			}
+
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyNamespaces_Faker2.Tests_GeneratorByte.cs"))
+			{
+				sourceStr = sr.ReadToEnd();
+			}	
+			Assert.IsNotNull(sourceStr);
+			Assert.IsNotEmpty(sourceStr);
+			tree = CSharpSyntaxTree.ParseText(sourceStr);
+			root = tree.GetCompilationUnitRoot();
+			
+			sourceNamespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
+			if (sourceNamespaces.Count() == 0)
+			{
+				Assert.Fail();
+			}
+			foreach (var sourceNamespace in sourceNamespaces)
+			{
+				var namespaceName = sourceNamespace.Name.ToString();
+				if (!(namespaceName == "Faker2.Tests"))
+				{
+					Assert.Fail();
+				}
+			}
+
+			Assert.Pass();
+		}
+
+		[Test]
+		public void TestFileScopedNamespace()
+		{
+			string sourceStr;
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/FileScopedNamespace_FileScopedFaker.Tests_GeneratorByte.cs"))
+			{
+				sourceStr = sr.ReadToEnd();
+			}	
+
+			Assert.IsNotNull(sourceStr);
+			Assert.IsNotEmpty(sourceStr);
+
+			var tree = CSharpSyntaxTree.ParseText(sourceStr);
+			var root = tree.GetCompilationUnitRoot();
+			
+			var sourceFileScopedNamespaces = root.DescendantNodes().OfType<FileScopedNamespaceDeclarationSyntax>();
+			if (sourceFileScopedNamespaces.Count() == 0)
+			{
+				Assert.Fail();
+			}
+
+			foreach (var sourceFileScopedNamespace in sourceFileScopedNamespaces)
+			{
+				var namespaceName = sourceFileScopedNamespace.Name.ToString();
+				if (!(namespaceName == "FileScopedFaker.Tests"))
+				{
+					Assert.Fail();
+				}
+			}
+
+			Assert.Pass();
+		}
+
+		[Test]
 		public void TestFileContent()
 		{
 			string sourceStr;
-			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyClasses_GeneratorBool.cs"))
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyClasses_Faker.Generators.Tests_GeneratorBool.cs"))
 			{
 				sourceStr = sr.ReadToEnd();
 			}

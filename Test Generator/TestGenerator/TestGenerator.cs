@@ -81,6 +81,7 @@ namespace TestGeneratorLib
 
 		private MemberDeclarationSyntax AssembleNamespaces (ClassDeclarationSyntax classDeclaration, bool isHasFileScopedNamespace)
 		{
+			// Check for filescoped namespaces
 			var resultClass = AssembleClass(classDeclaration);
 			if (isHasFileScopedNamespace)
 			{
@@ -91,6 +92,7 @@ namespace TestGeneratorLib
 			NamespaceDeclarationSyntax resultNamespaces;
 			var classNamespaces = new List<NamespaceDeclarationSyntax>();	
 
+			// Get all namespaces
 			while (currNamespace != null)
 			{
 				classNamespaces.Add(NamespaceDeclaration(QualifiedName((currNamespace).Name, IdentifierName("Tests"))));
@@ -106,8 +108,10 @@ namespace TestGeneratorLib
 				resultNamespaces = classNamespaces[0];
 			}
 			
+			// Add members to first namespace
 			resultNamespaces = resultNamespaces.AddMembers(resultClass);
 
+			// If more than 1 namespace than add it
 			if (classNamespaces.Count > 1)
 			{
 				classNamespaces[0] = resultNamespaces;
