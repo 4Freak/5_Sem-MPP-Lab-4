@@ -101,26 +101,17 @@ namespace TestGeneratorLib
 
 			if (classNamespaces.Count == 0)
 			{
-				resultNamespaces = NamespaceDeclaration(IdentifierName("Tests"));	
+				classNamespaces.Add(NamespaceDeclaration(IdentifierName("Tests")));
 			}
-			else
-			{
-				resultNamespaces = classNamespaces[0];
-			}
-			
-			// Add members to first namespace
-			resultNamespaces = resultNamespaces.AddMembers(resultClass);
+
+			classNamespaces[0] = classNamespaces[0].AddMembers(resultClass);
 
 			// If more than 1 namespace than add it
-			if (classNamespaces.Count > 1)
+			for (int i = 1; i < classNamespaces.Count; i++)
 			{
-				classNamespaces[0] = resultNamespaces;
-				for (int i = 1; i < classNamespaces.Count; i++)
-				{
-					classNamespaces[i] = classNamespaces[i].AddMembers(classNamespaces[i-1]);
-				}
-				resultNamespaces = classNamespaces[classNamespaces.Count-1];
+				classNamespaces[i] = classNamespaces[i].AddMembers(classNamespaces[i-1]);
 			}
+			resultNamespaces = classNamespaces[classNamespaces.Count-1];
 
 			return resultNamespaces;
 		}
