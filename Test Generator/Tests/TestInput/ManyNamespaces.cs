@@ -1,4 +1,7 @@
-﻿namespace Faker.Generators
+﻿using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Microsoft.CodeAnalysis;
+
+namespace Faker.Generators
 {
 	namespace AnothorOne
 	{

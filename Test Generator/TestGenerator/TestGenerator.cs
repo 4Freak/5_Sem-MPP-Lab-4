@@ -33,11 +33,12 @@ namespace TestGeneratorLib
 				}
 			}
 
-			var sourceUsings = root.DescendantNodes().OfType<UsingDirectiveSyntax>();
+			var sourceUsings = root.DescendantNodes().OfType<UsingDirectiveSyntax>()
+				.Where(u => !u.StaticKeyword.HasTrailingTrivia);
 			var resultUsings = new SyntaxList<UsingDirectiveSyntax>(sourceUsings)
 				.AddRange(sourceNamespaces.Select(GetUsingsFromNamespaces))
 				.Add(UsingDirective(ParseName("System")))
-				.Add(UsingDirective(ParseName("System.Generic.Collections")))
+				.Add(UsingDirective(ParseName("System.Collections.Generic")))
 				.Add(UsingDirective(ParseName("System.Linq")))
 				.Add(UsingDirective(ParseName("System.Text")))
 				.Add(UsingDirective(ParseName("NUnit.Framework")));

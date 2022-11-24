@@ -16,7 +16,7 @@ namespace Tests
 
 		private string[] args;
 
-		private int _classesCount = 5;
+		private int _classesCount = 6;
 
 		[SetUp]
 		public async Task Setup ()
@@ -28,7 +28,8 @@ namespace Tests
 				"../../../../Tests/TestInput/ManyNamespaces.cs",		// Many namespaces inside
 				"../../../../Tests/TestInput/NoMethods.cs",				// No methods inside
 				"../../../../Tests/TestInput/FileScopedNamespace.cs",   // FileScoped namespace inside
-				"../../../../Tests/TestOutput",
+				"../../../../Dataflow/Pipeline.cs",						// File to compile as test
+				"../../../../Tests/TestOutput",							
 				"4",
 				"4",
 				"4"};
@@ -112,10 +113,8 @@ namespace Tests
 			var root = tree.GetCompilationUnitRoot();
 			
 			var sourceNamespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
-			if (sourceNamespaces.Count() == 0)
-			{
-				Assert.Fail();
-			}
+			Assert.That(sourceNamespaces.Count, !Is.EqualTo(0));
+
 
 			foreach (var sourceNamespace in sourceNamespaces)
 			{
@@ -137,10 +136,8 @@ namespace Tests
 			root = tree.GetCompilationUnitRoot();
 			
 			sourceNamespaces = root.DescendantNodes().OfType<NamespaceDeclarationSyntax>();
-			if (sourceNamespaces.Count() == 0)
-			{
-				Assert.Fail();
-			}
+			Assert.That(sourceNamespaces.Count, !Is.EqualTo(0));
+
 			foreach (var sourceNamespace in sourceNamespaces)
 			{
 				var namespaceName = sourceNamespace.Name.ToString();
@@ -151,6 +148,39 @@ namespace Tests
 			}
 
 			Assert.Pass();
+		}
+
+		[Test] 
+		public void TestStaticAndNativeUsings()
+		{
+			string sourceStr;
+			using (var sr = new StreamReader("../../../../Tests/TestOutput/ManyNamespaces_Faker.Generators.Tests_GeneratorByte.cs"))
+			{
+				sourceStr = sr.ReadToEnd();
+			}	
+
+			Assert.IsNotNull(sourceStr);
+			Assert.IsNotEmpty(sourceStr);
+
+			var tree = CSharpSyntaxTree.ParseText(sourceStr);
+			var root = tree.GetCompilationUnitRoot();
+
+			var staticUsings = root.DescendantNodes().OfType<UsingDirectiveSyntax>()
+				.Where(u => u.StaticKeyword.HasTrailingTrivia);
+			Assert.That(staticUsings.Count, Is.EqualTo(0));
+
+			var sourceUsings = root.DescendantNodes().OfType<UsingDirectiveSyntax>()
+				.Where(u => !u.StaticKeyword.HasTrailingTrivia);
+			
+			foreach(var sourceUsing in sourceUsings)
+			{
+				if (sourceUsing.Name.ToString()== "Microsoft.CodeAnalysis")
+				{
+					Assert.Pass();
+				}
+			}
+
+			Assert.Fail();
 		}
 
 		[Test]

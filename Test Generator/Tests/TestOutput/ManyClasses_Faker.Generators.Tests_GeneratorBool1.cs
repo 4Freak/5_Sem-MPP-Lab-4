@@ -1,6 +1,6 @@
 using Faker.Generators;
 using System;
-using System.Generic.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
